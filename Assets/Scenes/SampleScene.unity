@@ -172,6 +172,7 @@ MonoBehaviour:
   tokenText: {fileID: 1663590200}
   pathText: {fileID: 1167523105}
   responseText: {fileID: 1441313078}
+  message: 
 --- !u!1 &203391020
 GameObject:
   m_ObjectHideFlags: 0
@@ -1412,7 +1413,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'TOKEN: adsasdas'
+  m_Text: 'Message: here'
 --- !u!222 &1663590201
 CanvasRenderer:
   m_ObjectHideFlags: 0

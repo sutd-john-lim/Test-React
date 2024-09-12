@@ -10,23 +10,38 @@ public class NetworkController : MonoBehaviour
     [SerializeField] private Text tokenText;
     [SerializeField] private Text pathText;
     [SerializeField] private Text responseText;
+    public string message;
+
+    private string defaultMessage = "{\"name\":\"wefaa5\",\"timespent\":900}";
+
+    string urlHardCoded = "https://us-central1-savemytaxesindia.cloudfunctions.net/addDataToFirestore";
+
 
     void Start()
     {
-        GetToken(token);
+        SetMessage(defaultMessage);
         SetPath(path);
     }
 
-    public void GetToken(string token)
+    public void SetToken(string token)
     {
         Debug.Log("Token Received " + token);
         this.token = token;
         tokenText.text = "Token: " + this.token;
     }
 
+    public void SetMessage(string message)
+    {
+        this.message = message;
+        Debug.Log("Message Received "+ this.message);
+        tokenText.text = "Message: " + this.message;
+    }
+
     public void SendApi()
     {
         Debug.Log("SentAPI " + path + " token " + token);
+        this.path = urlHardCoded;
+        pathText.text = "URL: " + path;
         StartCoroutine(submitRoutine());
     }
 
@@ -35,17 +50,11 @@ public class NetworkController : MonoBehaviour
         path = val;
         pathText.text = "URL: " + path;
     }
-    public void SetToken(string val)
-    {
-        token = val;
-        tokenText.text = "Token: " + token;
-    }
 
 
     private IEnumerator submitRoutine()
     {
         var url = path;
-        string message = "{\"timeTaken\": \"" + 1234 + "\",\"code\":\" CODE \",\"totalTimeSpent\":\"" + 123456 + ",\"stars\": \"3\"}";
         var www = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST);
         www.downloadHandler = new DownloadHandlerBuffer();
         www.SetRequestHeader("Authorization", "Bearer " + token);
