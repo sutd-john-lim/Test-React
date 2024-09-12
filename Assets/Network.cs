@@ -5,7 +5,6 @@ using UnityEngine.Networking;
 
 namespace UBlockly.UGUI
 {
-    // TODO:// add int grade variable to the submitroutine body.
     public class NetworkController : MonoBehaviour
     {
         [SerializeField] private string host = "http://127.0.0.1";
@@ -23,14 +22,17 @@ namespace UBlockly.UGUI
             this.token = token;
         }
 
-
-        public IEnumerator submitRoutine()
+        public void SendApi()
         {
+            Debug.Log("SentAPI");
+            StartCoroutine(submitRoutine());
+        }
 
+
+        private IEnumerator submitRoutine()
+        {
             var url = host + ":" + port + path_submit;
-            var localTime = GameObject.Find("LocalTimerValue").GetComponent<Text>();
-            var globalTime = GameObject.Find("GlobalTimerValue").GetComponent<Text>();
-            string message = "{\"timeTaken\": \"" + 1234 + "\",\"code\":\" CODE \",\"totalTime\":\"" + 123456 + "}";
+            string message = "{\"timeTaken\": \"" + 1234 + "\",\"code\":\" CODE \",\"totalTimeSpent\":\"" + 123456 + ",\"stars\": \"3\"}";
             var www = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST);
             www.downloadHandler = new DownloadHandlerBuffer();
             www.SetRequestHeader("Authorization", "Bearer " + token);
