@@ -3,55 +3,68 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 
-namespace UBlockly.UGUI
+public class NetworkController : MonoBehaviour
 {
-    public class NetworkController : MonoBehaviour
+    [SerializeField] private string path = "http://127.0.0.1/hohoho";
+    [SerializeField] private string token = "token";
+    [SerializeField] private Text tokenText;
+    [SerializeField] private Text pathText;
+    [SerializeField] private Text responseText;
+
+    void Start()
     {
-        [SerializeField] private string host = "http://127.0.0.1";
-        [SerializeField] private string path_login = "/users/login";
-        [SerializeField] private string path_submit = "/api/submit";
-        [SerializeField] private string path_get = "/api/data";
-        [SerializeField] private string path_logout = "/api/logout";
-        [SerializeField] private string port = "3000";
-        [SerializeField] private string token;
+        GetToken(token);
+        SetPath(path);
+    }
+
+    public void GetToken(string token)
+    {
+        Debug.Log("Token Received " + token);
+        this.token = token;
+        tokenText.text = "Token: " + this.token;
+    }
+
+    public void SendApi()
+    {
+        Debug.Log("SentAPI " + path + " token " + token);
+        StartCoroutine(submitRoutine());
+    }
+
+    public void SetPath(string val)
+    {
+        path = val;
+        pathText.text = "URL: " + path;
+    }
+    public void SetToken(string val)
+    {
+        token = val;
+        tokenText.text = "Token: " + token;
+    }
 
 
-        public void GetToken(string token)
+    private IEnumerator submitRoutine()
+    {
+        var url = path;
+        string message = "{\"timeTaken\": \"" + 1234 + "\",\"code\":\" CODE \",\"totalTimeSpent\":\"" + 123456 + ",\"stars\": \"3\"}";
+        var www = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST);
+        www.downloadHandler = new DownloadHandlerBuffer();
+        www.SetRequestHeader("Authorization", "Bearer " + token);
+        UploadHandler uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(message));
+        uploadHandler.contentType = "application/json";
+        www.uploadHandler = uploadHandler;
+        var response = www.SendWebRequest();
+        while (!response.isDone)
         {
-            Debug.Log("Token Received "+ token);
-            this.token = token;
+            yield return null;
         }
-
-        public void SendApi()
+        responseText.text = "Response: " + www.responseCode;
+        if (www.responseCode == 200)
         {
-            Debug.Log("SentAPI");
-            StartCoroutine(submitRoutine());
+            Debug.Log("Success Post");
         }
-
-
-        private IEnumerator submitRoutine()
+        else
         {
-            var url = host + ":" + port + path_submit;
-            string message = "{\"timeTaken\": \"" + 1234 + "\",\"code\":\" CODE \",\"totalTimeSpent\":\"" + 123456 + ",\"stars\": \"3\"}";
-            var www = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST);
-            www.downloadHandler = new DownloadHandlerBuffer();
-            www.SetRequestHeader("Authorization", "Bearer " + token);
-            UploadHandler uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(message));
-            uploadHandler.contentType = "application/json";
-            www.uploadHandler = uploadHandler;
-            var response = www.SendWebRequest();
-            while (!response.isDone)
-            {
-                yield return null;
-            }
-            if (www.responseCode == 200)
-            {
-                Debug.Log("Success Post");
-            }
-            else
-            {
-                Debug.LogError("Error API "+ www.responseCode);
-            }
+            Debug.LogError("Error API " + www.responseCode);
         }
     }
 }
